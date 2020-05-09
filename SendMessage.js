@@ -27,6 +27,13 @@ function doHttpRequest(sTextMessage)
 {
     var xhr = new XMLHttpRequest();
     var sBody = sTextMessage;
-    xhr.open("GET", "http://localhost:8080/text/" + sBody);
+
+    var bodyJson = {
+        "user": sUserName
+        "text": sTextMessage
+    }
+
+    xhr.open("POST", "http://localhost:8080/send/");
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.send();
 }
