@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
-from bottle import get, post, request, run, route
-import requests
 import json
+import DBConnect
 
-TOKEN = 'access_token'
+import requests
+from bottle import get, request, run, route
+
+TOKEN = 'sSev4QBinkO_JtwJubC5MrhJ8Kqsq7T9BdzFqMseTKw'
 
 '''
 create date: 10/05/2020
@@ -23,8 +25,19 @@ def sendMessage():
     jsonMessage = json.dumps(dictMessage)
     print(jsonMessage)
     urlSendMessage = 'https://botapi.tamtam.chat/messages?access_token=' + TOKEN + "&user_id=" + str(nUserId)
-    response = requests.post(urlSendMessage, headers=headers, data=jsonMessage, verify=False)
-    print(response.status_code, response.text)
+
+    bIsSend = False
+    while (bIsSend == False):
+        response = requests.post(urlSendMessage, headers=headers, data=jsonMessage, verify=False)
+        sSender = getInfoBot()
+        nSenderId = sSender["user_id"]
+        sSenderName = sSender["username"]
+        nStatusCode = response.status_code
+        responseJson = response.json()
+        DBConnect.doInsertRecord(sSenderName, sUserName, str(sTextMessage), json.dumps(dictMessage, ensure_ascii=False), nStatusCode, responseJson, nSenderId, nUserId)
+
+        if (nStatusCode == 200):
+            bIsSend = True
 
 '''
 create date: 09/05/2020
@@ -33,7 +46,7 @@ desc: Функция возвращает информацию о боте
 @get('/InfoBot')
 def getInfoBot():
     res = requests.get('https://botapi.tamtam.chat/me?access_token=' + TOKEN)
-    return res
+    return res.json()
 
 '''
 create date: 09/05/2020
