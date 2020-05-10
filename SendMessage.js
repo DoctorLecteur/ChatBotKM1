@@ -6,12 +6,15 @@ desc: Функция получает текст сообщения, котор�
 function sendMessage()
 {
     var sMessageValue = document.getElementById("comment").value;
+    var sUserName = document.getElementById("username").value;
+
     if (sMessageValue)
     {
-        alert(sMessageValue);
-        doHttpRequest(sMessageValue);
+        doHttpRequest(sMessageValue, sUserName);
         sMessageValue = "";
+        sUserName = "";
         document.getElementById("comment").value = "";
+        document.getElementById("username").value = "";
     }
     else
         alert("Заполните текст сообщения");
@@ -20,20 +23,19 @@ function sendMessage()
 /**
 create date: 09/05/2020
 @param sTextMessage - текст сообщения
+@param sUserName - имя пользователя
 desc: Функция отправляет сообщение на веб-сервис
 **/
 
-function doHttpRequest(sTextMessage)
+function doHttpRequest(sTextMessage, sUserName)
 {
-    var xhr = new XMLHttpRequest();
-    var sBody = sTextMessage;
+    var request = new XMLHttpRequest();
+    var url = "http://localhost:8080/send";
 
-    var bodyJson = {
-        "user": sUserName
-        "text": sTextMessage
-    }
+    var formData = new FormData();
+    formData.append("user", sUserName);
+    formData.append("text", sTextMessage);
 
-    xhr.open("POST", "http://localhost:8080/send/");
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.send();
+    request.open("POST", url, true);
+    request.send(formData);
 }

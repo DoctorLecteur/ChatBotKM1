@@ -1,19 +1,30 @@
-# coding: utf8;
-from bottle import get, post, request, run
+# -*- coding: utf-8 -*-
+from bottle import get, post, request, run, route
 import requests
 import json
 
-
 TOKEN = 'access_token'
 
-@get('/text/<sTextMessage>')
-def showText(sTextMessage):
-    return sTextMessage
-
-
-@post('/send')
+'''
+create date: 10/05/2020
+desc: Функция отпрааляет сообщение в чат
+'''
+@route('/send', method='POST')
 def sendMessage():
-    print(request)
+    sUserName = request.POST.get('user')
+    sTextMessage = request.POST.get('text')
+
+    nUserId = getUserForMessage(sUserName)
+    dictMessage = {
+         "text": str(sTextMessage)
+    }
+
+    headers = {'content-type': 'application/json'}
+    jsonMessage = json.dumps(dictMessage)
+    print(jsonMessage)
+    urlSendMessage = 'https://botapi.tamtam.chat/messages?access_token=' + TOKEN + "&user_id=" + str(nUserId)
+    response = requests.post(urlSendMessage, headers=headers, data=jsonMessage, verify=False)
+    print(response.status_code, response.text)
 
 '''
 create date: 09/05/2020
@@ -49,14 +60,19 @@ def getActiveChatsUsers(aChats):
             aChatsActive.append(aChats[i]["dialog_with_user"])
     return aChatsActive
 
+'''
+create date: 09/05/2020
+desc: Функция возращает user_id указано контакта
+'''
+
 @get('/UserForMessage/<sUserName>')
-def getUserForMessgae(sUserName):
+def getUserForMessage(sUserName):
     aChats = json.loads(getChatsInfo())
     aUsersActive = getActiveChatsUsers(aChats)
 
     for i in range(0, len(aUsersActive), 1):
         if (aUsersActive[i]["name"] == sUserName):
-            return str(aUsersActive[i]["user_id"])
+            return aUsersActive[i]["user_id"]
 
 
 run(host='localhost', port=8080, debug=True)
