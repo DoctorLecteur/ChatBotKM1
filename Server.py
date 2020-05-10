@@ -5,7 +5,7 @@ import DBConnect
 import requests
 from bottle import get, request, run, route
 
-TOKEN = 'sSev4QBinkO_JtwJubC5MrhJ8Kqsq7T9BdzFqMseTKw'
+TOKEN = 'access_token'
 
 '''
 create date: 10/05/2020
