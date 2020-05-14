@@ -26,8 +26,8 @@ def sendMessage():
     print(jsonMessage)
     urlSendMessage = 'https://botapi.tamtam.chat/messages?access_token=' + TOKEN + "&user_id=" + str(nUserId)
 
-    bIsSend = False
-    while (bIsSend == False):
+    nResponseCode = 0
+    while (nResponseCode != 200):
         response = requests.post(urlSendMessage, headers=headers, data=jsonMessage, verify=False)
         sSender = getInfoBot()
         nSenderId = sSender["user_id"]
@@ -36,8 +36,7 @@ def sendMessage():
         responseJson = response.json()
         DBConnect.doInsertRecord(sSenderName, sUserName, str(sTextMessage), json.dumps(dictMessage, ensure_ascii=False), nStatusCode, responseJson, nSenderId, nUserId)
 
-        if (nStatusCode == 200):
-            bIsSend = True
+        nResponseCode = DBConnect.getInfoMessageBD()
 
 '''
 create date: 09/05/2020
@@ -60,11 +59,6 @@ def getChatsInfo():
 
     return json.dumps(chats)
 
-'''
-create date: 09/05/2020
-desc: Функция возращает активные чаты в которых участвует бот
-'''
-
 def getActiveChatsUsers(aChats):
 
     aChatsActive = []
@@ -72,11 +66,6 @@ def getActiveChatsUsers(aChats):
         if (aChats[i]["status"] == 'active'):
             aChatsActive.append(aChats[i]["dialog_with_user"])
     return aChatsActive
-
-'''
-create date: 09/05/2020
-desc: Функция возращает user_id указано контакта
-'''
 
 @get('/UserForMessage/<sUserName>')
 def getUserForMessage(sUserName):
