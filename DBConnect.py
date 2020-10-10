@@ -3,8 +3,8 @@ import datetime
 import json
 from psycopg2 import sql
 
-conn = psycopg2.connect(dbname='postgres', user='postgres',
-                        password='12345', host='localhost')
+conn = psycopg2.connect(dbname=dbname, user=user,
+                        password=password, host=localhost)
 
 def doInsertRecord(sSender, sRecipient, sTextMessage, jsonQuery, responseCode, responseJson, nSenderId, nUserId):
     with conn.cursor() as cursor:
